@@ -1,3 +1,4 @@
+import { toBeChecked } from "@testing-library/jest-dom/matchers";
 import React from "react";
 import { useState } from "react";
 
@@ -6,19 +7,40 @@ function Todo(props) {
   const [todolist, setTodoList] = useState([]);
 
   const handleAdd = () => {
-    const newTask = { id: Date.now(), text: todo };
-    setTodoList([...todolist, newTask]);
+    setTodoList([...todolist, { id: Date.now(), todo ,completed:false}]);
     setTodo("");
   };
-  const handleEdit = () => {};
+  const handleEdit = (id) => {
+    const newtodo = todolist.find((item) => {
+      if (item.id == id) return true;
+      else return false;
+    });
+    setTodo(newtodo.todo);
+
+    handleDelete(id);
+  };
 
   const handleDelete = (id) => {
-    const updatedTodos = todolist.filter(todo => todo.id !== id);
-    setTodoList(updatedTodos);
+    setTodoList(
+      todolist.filter((item) => {
+        return item.id != id;
+      })
+    );
   };
 
   const handleOnChange = (e) => {
     setTodo(e.target.value);
+  };
+
+  const handleCheckbox = (id) => {
+    
+    const newtodo = todolist.find((item) => {
+       
+      
+    });
+    
+      
+
   };
 
   return (
@@ -49,26 +71,37 @@ function Todo(props) {
         </div>
 
         <div className=" flex flex-col gap-4 mt-5">
-          {todolist.map((todo, index) => {
+          {todolist.map((todo) => {
             return (
-              
-              <div className="flex justify-between w-full  ">
-                <div className="flex justify-between gap-2 w-1/2 ">
-                  <input type="checkbox" />
-                  <div className="italic font-semibold text-orange-500 flex-1 ">
-                    {todo}
+              <div key={todo.id}>
+                <div className="flex justify-between w-full  ">
+                  <div className="flex justify-between gap-2 w-1/2 ">
+                    <input onChange={()=>{
+                      handleCheckbox(todo.id)}} type="checkbox" />
+                    <div className="italic font-semibold text-orange-500 flex-1 ">
+                      {todo.todo}
+                    </div>
+                  </div>
+                  <div className="flex gap-2 text-red-700 font-bold">
+                    <button
+                      className="hover:underline"
+                      onClick={() => {
+                        handleEdit(todo.id);
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="hover:underline"
+                      onClick={() => {
+                        handleDelete(todo.id);
+                      }}
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
-                <div className="flex gap-2 text-red-700 font-bold">
-                  <button className="hover:underline" onClick={handleEdit}>
-                    Edit
-                  </button>
-                  <button className="hover:underline" onClick={handleDelete(todo.id)}>
-                    Delete
-                  </button>
-                </div>
               </div>
-              
             );
           })}
         </div>
