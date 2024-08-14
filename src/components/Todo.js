@@ -1,13 +1,42 @@
 import { toBeChecked } from "@testing-library/jest-dom/matchers";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 
 function Todo(props) {
+  
+    const items = localStorage.getItem("todolist");
+    let arr=[];
+    if(items!==null)
+    {
+      arr=JSON.parse(items);
+    }
+
   const [todo, setTodo] = useState("");
-  const [todolist, setTodoList] = useState([]);
+  const [todolist, setTodoList] = useState(arr);
+
+  // const todostring = localStorage.getItem("todolist")
+
+  // if(todostring){
+  // const todolist = JSON.parse(localStorage.getItem("todolist"))
+  // setTodoList(todolist);
+  // }
+  // useEffect(() => {
+  //   console.log(localStorage)
+  //   const items = localStorage.getItem("todolist");
+  //   console.log(items);
+  //   console.log(items===null);
+
+  //   if (items === null) {
+  //     setTodoList([]);
+  //   } else {
+  //     const items1 = JSON.parse(items);
+  //     console.log(items1);
+  //     setTodoList(items1);
+  //   }
+  // }, []);
 
   const handleAdd = () => {
-    setTodoList([...todolist, { id: Date.now(), todo ,completed:false}]);
+    setTodoList([...todolist, { id: Date.now(), todo, completed: false }]);
     setTodo("");
   };
   const handleEdit = (id) => {
@@ -32,15 +61,21 @@ function Todo(props) {
     setTodo(e.target.value);
   };
 
-  const handleCheckbox = (id) => {
-    
-    const newtodo = todolist.find((item) => {
-       
-      
-    });
-    
-      
+  useEffect(() => {
+    localStorage.setItem("todolist", JSON.stringify(todolist));
+  }, [todolist]);
 
+  const handleCheckbox = (id, event) => {
+    const arr = [...todolist];
+    const ischecked = event.target.checked;
+
+    const index = arr.findIndex((item) => {
+      if (item.id == id) return true;
+      else return false;
+    });
+    console.log(index);
+    arr[index].completed = ischecked;
+    setTodoList(arr);
   };
 
   return (
@@ -76,10 +111,18 @@ function Todo(props) {
               <div key={todo.id}>
                 <div className="flex justify-between w-full  ">
                   <div className="flex justify-between gap-2 w-1/2 ">
-                    <input onChange={()=>{
-                      handleCheckbox(todo.id)}} type="checkbox" />
+                    <input
+                      onChange={(event) => {
+                        handleCheckbox(todo.id, event);
+                      }}
+                      type="checkbox"
+                      checked={todo.completed}
+                    />
+
                     <div className="italic font-semibold text-orange-500 flex-1 ">
-                      {todo.todo}
+                      <div className={todo.completed ? "line-through" : ""}>
+                        {todo.todo}
+                      </div>
                     </div>
                   </div>
                   <div className="flex gap-2 text-red-700 font-bold">
